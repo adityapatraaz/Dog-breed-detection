@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dog Breed Predictor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            transition: background-color 0.5s, color 0.5s;
+        }
+        h1 {
+            color: #ff6347; /* Tomato color */
+        }
+        form {
+            margin: 20px 0;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: background-color 0.5s, color 0.5s;
+        }
+        input[type="file"] {
+            margin: 10px 0;
+        }
+        button {
+            background-color: #4CAF50; /* Green */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        img {
+            width: 300px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .predicted-breed {
+            font-size: 1.5em;
+            color: #ffa500; /* Orange */
+        }
+        .remove-image {
+            background-color: #f44336; /* Red */
+        }
+        /* Light mode styles */
+        body.light-mode {
+            background-color: #f0f8ff;
+            color: #333;
+        }
+        form.light-mode {
+            background-color: #fff;
+        }
+        /* Dark mode styles */
+        body.dark-mode {
+            background-color: #333;
+            color: #f0f8ff;
+        }
+        form.dark-mode {
+            background-color: #444;
+        }
+        /* Slider styles */
+        .toggle-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 30px;
+            background: #ccc;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .toggle-slider {
+            width: 30px;
+            height: 30px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        .dark-mode .toggle-container {
+            background: #555;
+        }
+        .dark-mode .toggle-slider {
+            transform: translateX(30px);
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <h1>Dog Breed Predictor</h1>
+    <img id="uploaded-image" src="https://img.freepik.com/premium-photo/blissful-boundaries-joyful-canine-frolics-meadow_908985-8423.jpg?w=900" alt="Dog Image" />
+    <form id="upload-form" method="POST" enctype="multipart/form-data" class="light-mode">
+        <input type="file" name="file" accept="image/*" required onchange="previewImage(event)">
+        <button type="submit">Predict Breed</button>
+    </form>
+    <button class="remove-image" id="remove-button" style="display:none;" onclick="removeImage()">Remove Image</button>
+    
+    {% if predicted_breed %}
+        <h2 class="predicted-breed">The predicted breed is: {{ predicted_breed }}</h2>
+    {% endif %}
+
+    <!-- Toggle Switch -->
+    <div class="toggle-container" id="toggle-theme">
+        <div class="toggle-slider"></div>
+    </div>
+
+    <script>
+        // Check local storage for theme preference
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        document.body.classList.add(currentTheme + '-mode');
+        document.getElementById('upload-form').classList.add(currentTheme + '-mode');
+
+        document.getElementById('toggle-theme').addEventListener('click', function() {
+            const body = document.body;
+            const form = document.getElementById('upload-form');
+            const isDarkMode = body.classList.toggle('dark-mode');
+            body.classList.toggle('light-mode');
+            form.classList.toggle('dark-mode');
+            form.classList.toggle('light-mode');
+            // Save the theme preference in local storage
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+        });
+
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('uploaded-image');
+                    img.src = e.target.result;
+                    document.getElementById('remove-button').style.display = 'inline';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeImage() {
+            const img = document.getElementById('uploaded-image');
+            img.src = "https://img.freepik.com/premium-photo/blissful-boundaries-joyful-canine-frolics-meadow_908985-8423.jpg?w=900"; // Reset to default image
+            document.getElementById('upload-form').reset(); // Reset form
+            document.getElementById('remove-button').style.display = 'none'; // Hide remove button
+        }
+    </script>
+</body>
+</html>
